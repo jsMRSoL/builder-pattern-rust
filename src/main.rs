@@ -1,94 +1,51 @@
-// create interfaces for Item and Packing
-trait Item {
-    fn get_packing(&self) -> Box<dyn Packing>;
-    fn get_name(&self) -> String;
-    fn get_price(&self) -> f32;
+enum Item {
+    VegBurger,
+    ChickenBurger,
+    Pepsi,
+    Coke,
 }
 
-trait Packing {
-    fn pack(&self) -> String;
+enum Packing {
+    Bottle,
+    Wrapper,
 }
 
-
-// create concrete classes implementing the Packing interface
-struct Wrapper;
-impl Packing for Wrapper {
+impl Packing {
     fn pack(&self) -> String {
-	"Wrapper".into()
+	match self {
+	    Packing::Bottle => {return "Bottle".into()},
+	    Packing::Wrapper => {return "Wrapper".into()}
+	}
     }
 }
 
-struct Bottle;
-impl Packing for Bottle {
-    fn pack(&self) -> String {
-	"Bottle".into()
-    }
-}
-
-
-// Create concrete classes for food items
-struct VegBurger;
-impl VegBurger {
-}
-impl Item for VegBurger {
-    fn get_packing(&self) -> Box<dyn Packing> {
-	Box::new(Wrapper)
+impl Item {
+    fn get_packing(&self) -> Packing {
+	match &self {
+	    Item::ChickenBurger | Item::VegBurger => {return Packing::Wrapper},
+	    Item::Pepsi | Item::Coke => {return Packing::Bottle},
+	}
     }
     fn get_name(&self) -> String {
-	"Veg Burger".into()
+	match self {
+	    Item::ChickenBurger => {return "Chicken Burger".into()},
+	    Item::VegBurger => {return "Veggie Burger".into()},
+	    Item::Pepsi => {return "Pepsi".into()},
+	    Item::Coke => {return "Coke".into()},
+	}
     }
     fn get_price(&self) -> f32 {
-	25.0
-    }
-}
-
-struct ChickenBurger;
-impl ChickenBurger {
-}
-impl Item for ChickenBurger {
-    fn get_packing(&self) -> Box<dyn Packing> {
-	Box::new(Wrapper)
-    }
-    fn get_name(&self) -> String {
-	"Chicken Burger".into()
-    }
-    fn get_price(&self) -> f32 {
-	50.5
-    }
-}
-
-struct Pepsi;
-impl Pepsi {
-}
-impl Item for Pepsi {
-    fn get_packing(&self) -> Box<dyn Packing> {
-	Box::new(Bottle)
-    }
-    fn get_name(&self) -> String {
-	"Pepsi".into()
-    }
-    fn get_price(&self) -> f32 {
-	35.0
-    }
-}
-
-struct Coke;
-impl Coke {
-}
-impl Item for Coke {
-    fn get_packing(&self) -> Box<dyn Packing> {
-	Box::new(Bottle)
-    }
-    fn get_name(&self) -> String {
-	"Coke".into()
-    }
-    fn get_price(&self) -> f32 {
-	30.0
+	match self {
+	    Item::ChickenBurger => {return 50.5},
+	    Item::VegBurger => {return 25.0}
+	    Item::Pepsi => {return 35.0},
+	    Item::Coke => {return 30.0},
+	}
     }
 }
 
 struct Meal {
-    list: Vec<Box<dyn Item>>,
+    list: Vec<Item>,
 }
 
 impl Meal {
@@ -97,7 +54,7 @@ impl Meal {
 	    list: Vec::new(),
 	}
     }
-    fn add_item(&mut self, item: Box<dyn Item>) {
+    fn add_item(&mut self, item: Item) {
 	self.list.push(item);
     }
     fn get_cost(&self) -> f32 {
@@ -121,14 +78,14 @@ struct MealBuilder;
 impl MealBuilder {
     fn prepare_veg_meal() -> Meal {
 	let mut meal = Meal::new();
-	meal.add_item(Box::new(VegBurger));
-	meal.add_item(Box::new(Coke));
+	meal.add_item(Item::VegBurger);
+	meal.add_item(Item::Coke);
 	meal
     }
     fn prepare_meat_meal() -> Meal {
 	let mut meal = Meal::new();
-	meal.add_item(Box::new(ChickenBurger));
-	meal.add_item(Box::new(Pepsi));
+	meal.add_item(Item::ChickenBurger);
+	meal.add_item(Item::Pepsi);
 	meal
     }
 }
